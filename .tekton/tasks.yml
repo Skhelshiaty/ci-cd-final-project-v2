@@ -1,0 +1,30 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: cleanup
+spec:
+  workspaces:
+    - name: source
+  steps:
+    - name: remove-node-modules
+      image: registry.access.redhat.com/ubi8/ubi
+      script: |
+        #!/usr/bin/env bash
+        rm -rf /workspace/source/node_modules
+
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: jest-test
+spec:
+  workspaces:
+    - name: source
+  steps:
+    - name: run-jest
+      image: registry.access.redhat.com/ubi8/nodejs-18
+      workingDir: /workspace/source
+      script: |
+        #!/usr/bin/env bash
+        npm install
+        npm test
